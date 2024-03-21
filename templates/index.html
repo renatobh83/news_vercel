@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News JSON</title>
+</head>
+<style>
+   body {
+    font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 5px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .article {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+
+        .article h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .article .meta {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .article .content, .content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+        }
+    </style>
+</style>
+<body>
+    <h1 class="content"><span id="load-time"></span></h1>
+    <div class="container">
+        {% for item in json_data %}
+        <div class="article">
+                 <!-- <p class="content">{{item['jornal']}}</p> -->
+                 <div class="meta">{{ item["jornal"] }} {{ item["hora"] }} </div>
+                 <h2>{{ item["noticia"] }}</h2>
+            </div>
+        {% endfor %}
+    </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const loadTimeElement = document.getElementById('load-time');
+                const loadTime = new Date().toLocaleTimeString('pt-BR');
+                loadTimeElement.textContent = `Página carregada às ${loadTime}`;
+            });
+        </script>
+</body>
+
+</html>
