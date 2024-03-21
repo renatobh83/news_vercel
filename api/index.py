@@ -22,10 +22,14 @@ class NewsSpider(scrapy.Spider):
     custom_settings = {
         'USER_AGENT' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
     }
+    
+    
     def start_requests(self):
         yield scrapy.Request("https://valor.globo.com/ultimas-noticias/", callback = self.parse_valor)
         yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias", callback = self.parse_folha)
         yield scrapy.Request("https://www.estadao.com.br/ultimas/", callback = self.parse_estadao)
+    
+    
     def parse_valor(self, response):
         # noticias = response.css("h2>a::text").getall()
         noticias = response.css('div.bastian-feed-item')
@@ -36,6 +40,8 @@ class NewsSpider(scrapy.Spider):
                 "hora":  noticia.css('span.feed-post-datetime::text').get().strip(),
                 "jornal": 'Valor'
             }
+    
+    
     def parse_folha(self, response):
         # noticias = response.css("h2::text").getall()[1:]
         noticias = response.css('li.c-headline--newslist')[:7]
@@ -46,8 +52,10 @@ class NewsSpider(scrapy.Spider):
                 # 'Hora':  time if time else tempo_atual
                 "jornal": "Folha"
             }
+    
+    
     def parse_estadao(self, response):
-        noticias = response.css("h3::text").getall()
+        noticias = response.css("h3::text").getall()[:7]
         for noticia in noticias:
              yield {
                 "noticia": noticia,
@@ -90,4 +98,4 @@ def get_offers():
 
 if __name__ == '__main__':
     # Executar o aplicativo Flask no modo de desenvolvimento
-    app.run(debug=True)
+    app.run(debug=False)
