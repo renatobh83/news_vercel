@@ -7,7 +7,7 @@ from scrapy.crawler import CrawlerProcess
 from flask import Flask, render_template
 
 app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
-
+file_path = os.path.join(os.path.dirname(__file__), 'news.json')
 crawler_executado = False
 tempo_atual = time.time()
 
@@ -49,13 +49,13 @@ class NewsSpider(scrapy.Spider):
             }
 def run_crawler():
     process = CrawlerProcess(settings={
-        'FEEDS': {'news.json': {'format': 'json', 'overwrite': True}},  # new in 2.1
+        'FEEDS': {file_path: {'format': 'json', 'overwrite': True}},  # new in 2.1
         'LOG_ENABLED': False
     })
 
     process.crawl(NewsSpider)
     process.start()
-file_path = os.path.join(os.path.dirname(__file__), 'news.json')
+
 
 def ler_arquivo():
     global crawler_executado
