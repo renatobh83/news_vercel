@@ -5,9 +5,15 @@ import scrapy
 import multiprocessing
 from scrapy.crawler import CrawlerProcess
 from flask import Flask, render_template
+import tempfile
 
 app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
-file_path = os.path.join(os.path.dirname(__file__), 'news.json')
+
+temp_dir = tempfile.gettempdir()
+
+file_path = os.path.join(temp_dir, 'news.json')
+
+# file_path = os.path.join(os.path.dirname(__file__), 'news.json')
 crawler_executado = False
 tempo_atual = time.time()
 
