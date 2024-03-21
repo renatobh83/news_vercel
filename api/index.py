@@ -38,7 +38,7 @@ class NewsSpider(scrapy.Spider):
             }
     def parse_folha(self, response):
         # noticias = response.css("h2::text").getall()[1:]
-        noticias = response.css('li.c-headline--newslist')
+        noticias = response.css('li.c-headline--newslist')[:7]
         for noticia in noticias:
             #  time = noticia.css('time.c-headline__dateline::text').get().strip()
              yield {
