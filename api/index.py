@@ -55,9 +55,11 @@ def run_crawler():
 
     process.crawl(NewsSpider)
     process.start()
+file_path = os.path.join(os.path.dirname(__file__), 'news.json')
+
 def ler_arquivo():
     global crawler_executado
-    with open('news.json','r') as f:
+    with open(file_path,'r') as f:
         data = json.load(f)
         crawler_executado = False
         return data
