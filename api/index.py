@@ -1,4 +1,4 @@
-import os
+from os.path import dirname, join, abspath
 import time
 import json
 import scrapy
@@ -7,16 +7,13 @@ from scrapy.crawler import CrawlerProcess
 from flask import Flask, render_template
 import tempfile
 
-from os.path import dirname, join, abspath
 dir = dirname(abspath(__file__))
-# app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
-# app = Flask(__name__, template_folder=c.join(os.path.dirname(os.getcwd()), 'templates'))
+
 app = Flask(__name__, template_folder=join(dir,'..', 'templates'))
 
-# print( os.path.dirname(os.path.abspath(__file__)))
 temp_dir = tempfile.gettempdir()
 
-file_path = os.path.join(temp_dir, 'news.json')
+file_path = join(temp_dir, 'news.json')
 
 crawler_executado = False
 tempo_atual = time.time()
@@ -45,22 +42,23 @@ class NewsSpider(scrapy.Spider):
 
 
     def parse_folha(self, response):
-        noticias = response.css('li.c-headline--newslist')[:7]
+        noticias = response.xpath('//li[contains(@class, "c-headline--newslist") and not(.//div[contains(@class, "OUTBRAIN")])]')[:7]
         for noticia in noticias:
-            #  time = noticia.css('time.c-headline__dateline::text').get().strip()
+             time = noticia.css('time.c-headline__dateline::text').get().strip()
              yield {
                 "noticia": noticia.css('h2::text').get(),
-                # 'Hora':  time if time else tempo_atual
+                'hora':  time,
                 "jornal": "Folha"
             }
 
 
     def parse_estadao(self, response):
-        noticias = response.css("h3::text").getall()[:7]
+        noticias = response.css('.noticias-mais-recenter--item')
         for noticia in noticias:
              yield {
-                "noticia": noticia,
-                "jornal": 'Estadao'
+                "noticia": noticia.css('h3::text').get(),
+                "jornal": 'Estadao',
+                'hora':  noticia.css('span.date::text').get()
             }
 def run_crawler():
     process = CrawlerProcess(settings={
