@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News JSON</title>
+    <style>
+        /* Estilos comuns para ambos os dispositivos */
+        body {
+            font-family: Georgia, serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            margin: 5px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .article {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+
+        .article h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .article .meta {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .article .content, .content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        /* Estilos específicos para dispositivos desktop */
+        @media (min-width: 768px) {
+            body {
+                font-family: Georgia, serif; /* Usando fonte serif apenas em desktop */
+            }
+
+            .container {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .article {
+                width: calc(33.33% - 20px);
+                margin-right: 20px;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #333;
+            }
+
+            .article h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            .article .meta {
+                font-size: 14px;
+                color: #888;
+                margin-bottom: 10px;
+            }
+
+            .article .content, .content {
+                font-size: 18px;
+                line-height: 1.8;
+                color: #333;
+                text-align: justify;
+            }
+
+            .article:last-child {
+                margin-right: 0;
+            }
+        .ticker-container {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .ticker {
+            display: inline-block;
+            margin-right: 20px;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Estilos específicos para dispositivos desktop */
+        @media (min-width: 768px) {
+            .ticker-container {
+                margin-bottom: 10px;
+            }
+
+            .ticker {
+                display: inline-block;
+                margin-right: 20px;
+                animation: marquee 30s linear infinite;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Página de Notícias</h1>
+    <div class="ticker-container">
+        <div class="ticker" id="ticker"></div>
+    </div>
+    <div class="container">
+        {% for item in json_data %}
+        <div class="article">
+            <div class="meta">{{ item["jornal"] }} {{ item["hora"] }}</div>
+            <h2>{{ item["noticia"] }}</h2>
+            <p class="content">{{ item["conteudo"] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Função para fazer uma solicitação à API do Alpha Vantage e obter as cotações de ações
+        async function fetchQuotes() {
+            const apiKey = 'sua_chave_de_api'; // Substitua 'sua_chave_de_api' pela sua chave de API do Alpha Vantage
+            const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA']; // Símbolos das ações que você deseja obter cotações
+
+            try {
+                const responses = await Promise.all(
+                    symbols.map(symbol =>
+                        fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`)
+                            .then(response => response.json())
+                    )
+                );
+
+                const quotesData = responses.map(response => response['Global Quote']);
+                console.log(quotesData);
+
+                return quotesData;
+            } catch (error) {
+                console.error('Erro ao obter cotações:', error);
+                return [];
+            }
+        }
+
+        const tickerElement = document.getElementById('ticker');
+
+        async function updateTicker() {
+            const quotesData = await fetchQuotes();
+            tickerElement.innerHTML = ''; // Limpa o ticker antes de atualizar
+
+            quotesData.forEach(quote => {
+                const span = document.createElement('span');
+                span.textContent = `${quote['01. symbol']}: ${quote['05. price']} | `;
+                tickerElement.appendChild(span);
+            });
+        }
+
+        updateTicker(); // Atualiza o ticker inicialmente
+
+        // Intervalo para atualizar o ticker a cada 5 segundos (simulação)
+        setInterval(updateTicker, 5000);
+    </script>
+</body>
+
+</html>
