@@ -7,8 +7,13 @@ from scrapy.crawler import CrawlerProcess
 from flask import Flask, render_template
 import tempfile
 
-app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
+from os.path import dirname, join, abspath
+dir = dirname(abspath(__file__))
+# app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
+# app = Flask(__name__, template_folder=c.join(os.path.dirname(os.getcwd()), 'templates'))
+app = Flask(__name__, template_folder=join(dir,'..', 'templates'))
 
+# print( os.path.dirname(os.path.abspath(__file__)))
 temp_dir = tempfile.gettempdir()
 
 file_path = os.path.join(temp_dir, 'news.json')
