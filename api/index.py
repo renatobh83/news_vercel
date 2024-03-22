@@ -7,7 +7,7 @@ from scrapy.crawler import CrawlerProcess
 from flask import Flask, render_template
 import tempfile
 
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.getcwd()),  'templates'))
+app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'))
 
 temp_dir = tempfile.gettempdir()
 
