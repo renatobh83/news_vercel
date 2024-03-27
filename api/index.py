@@ -30,12 +30,12 @@ class NewsSpider(scrapy.Spider):
         yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias", callback = self.parse_folha)
         yield scrapy.Request("https://www.estadao.com.br/ultimas/", callback = self.parse_estadao)
 
-
     def parse_valor(self, response):
         noticias = response.css('div.bastian-feed-item')
         for noticia in noticias:
             yield {
                 "noticia": noticia.css("h2>a::text").get(),
+                "resumo": noticia.xpath(".//p[contains(@class, 'feed-post-body-resumo')]/text()").get(),
                 "hora":  noticia.css('span.feed-post-datetime::text').get().strip(),
                 "jornal": 'Valor'
             }
@@ -47,6 +47,7 @@ class NewsSpider(scrapy.Spider):
              time = noticia.css('time.c-headline__dateline::text').get().strip()
              yield {
                 "noticia": noticia.css('h2::text').get(),
+                "resumo": noticia.xpath('.//p[contains(@class, "c-headline__standfirst")]/text()').get(),
                 'hora':  time,
                 "jornal": "Folha"
             }
