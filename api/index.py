@@ -27,7 +27,7 @@ class NewsSpider(scrapy.Spider):
 
     def start_requests(self):
         yield scrapy.Request("https://valor.globo.com/ultimas-noticias/", callback = self.parse_valor)
-        yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias", callback = self.parse_folha)
+        yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias/", callback = self.parse_folha)
         yield scrapy.Request("https://www.estadao.com.br/ultimas/", callback = self.parse_estadao)
 
     def parse_valor(self, response):
