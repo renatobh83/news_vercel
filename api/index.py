@@ -1,5 +1,7 @@
+from cgitb import text
 from os.path import dirname, join, abspath
 import time
+import re
 import json
 import scrapy
 import multiprocessing
@@ -27,8 +29,10 @@ class NewsSpider(scrapy.Spider):
 
     def start_requests(self):
         yield scrapy.Request("https://valor.globo.com/ultimas-noticias/", callback = self.parse_valor)
-        yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias", callback = self.parse_folha)
+        yield scrapy.Request("https://www1.folha.uol.com.br/ultimas-noticias/", callback = self.parse_folha)
         yield scrapy.Request("https://www.estadao.com.br/ultimas/", callback = self.parse_estadao)
+        yield scrapy.Request("http://broadcast.com.br/", callback = self.parse_broadcast)
+        yield scrapy.Request("https://www.bomdiamercado.com.br/noticias/", callback = self.parse_bdm)
 
     def parse_valor(self, response):
         noticias = response.css('div.bastian-feed-item')
@@ -51,7 +55,16 @@ class NewsSpider(scrapy.Spider):
                 'hora':  time,
                 "jornal": "Folha"
             }
+    def parse_broadcast(self, response):
+        noticias = response.css('div.materia')[1:6]
+        for noticia in noticias:
+            texto =noticia.css('h3 a::text').get()
 
+            yield{
+                "noticia": texto.capitalize(),
+                "resumo": noticia.css('p.excerpt::text').get(),
+                "jornal": "Broadcast +"
+            }
 
     def parse_estadao(self, response):
         noticias = response.css('.noticias-mais-recenter--item')
@@ -61,10 +74,23 @@ class NewsSpider(scrapy.Spider):
                 "jornal": 'Estadao',
                 'hora':  noticia.css('span.date::text').get()
             }
+    def parse_bdm(self, response):
+        noticias = response.css('div.col-md-12 .no-gutter-col')
+        for noticia in noticias:
+            yield{
+                'noticia': noticia.css('.content a h4::text').get().strip(),
+                'resumo': noticia.css('.content a p.small.content ::text').get().strip(),
+                'hora': noticia.css('p.x-small::text').get().strip(),
+                'jornal': 'BDM'
+            }
+        # yield scrapy.Request(
+        #     'https://www.bomdiamercado.com.br/noticias/page/2/',
+        #     callback=self.parse_bdm
+        # )
 def run_crawler():
     process = CrawlerProcess(settings={
         'FEEDS': {file_path: {'format': 'json', 'overwrite': True}},  # new in 2.1
-        'LOG_ENABLED': False
+        'LOG_ENABLED': True
     })
 
     process.crawl(NewsSpider)
