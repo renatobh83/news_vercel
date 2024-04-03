@@ -86,7 +86,7 @@ class NewsSpider(scrapy.Spider):
 def run_crawler():
     process = CrawlerProcess(settings={
         'FEEDS': {file_path: {'format': 'json', 'overwrite': True}},  # new in 2.1
-        'LOG_ENABLED': True
+        'LOG_ENABLED': False
     })
 
     process.crawl(NewsSpider)
