@@ -83,10 +83,6 @@ class NewsSpider(scrapy.Spider):
                 'hora': noticia.css('p.x-small::text').get().strip(),
                 'jornal': 'BDM'
             }
-        # yield scrapy.Request(
-        #     'https://www.bomdiamercado.com.br/noticias/page/2/',
-        #     callback=self.parse_bdm
-        # )
 def run_crawler():
     process = CrawlerProcess(settings={
         'FEEDS': {file_path: {'format': 'json', 'overwrite': True}},  # new in 2.1
